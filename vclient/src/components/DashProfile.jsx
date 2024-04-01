@@ -5,6 +5,7 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/
 import { app } from '../firebase'
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { updateStart, updateFailure, updateSuccess } from '../redux/user/userSlice'
 
 
@@ -19,6 +20,7 @@ const DashProfile = () => {
   const [formData, setFormData] = useState({});
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null)
   const [updateUserError, setUpdateUserError] = useState(null)
+  const [showModal, setShowModal] = useState(false)
 
 
   const { currentUser, loading } = useSelector(state => state.user)
@@ -204,7 +206,7 @@ const DashProfile = () => {
       </form>
 
       <div className='text-red-500 flex justify-between mt-5'>
-        <span className='cursor-pointer'>
+        <span className='cursor-pointer' onClick={() => setShowModal(true)}>
           Delete Account
         </span>
         <span className='cursor-pointer'>
@@ -222,6 +224,35 @@ const DashProfile = () => {
           {updateUserError}
         </Alert>
       )}
+
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size='md'
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className='text-center'>
+            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
+            <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
+              Are you sure you want to delete your account?
+            </h3>
+            <div className='flex justify-center gap-4'>
+              <Button color='failure'>
+                Yes, I'm sure
+              </Button>
+              <Button color='gray' onClick={() => setShowModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+
+
+
 
     </div>
   )
