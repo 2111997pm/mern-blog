@@ -1,0 +1,33 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Debugging and profiling
+chrome-profile/
+debug.log
+profile/
+.vscode/
+.idea/
+
+# Environment variables
+.env
+
+# Output of build tools
+build/
+dist/
+out/
