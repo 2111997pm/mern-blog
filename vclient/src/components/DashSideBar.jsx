@@ -10,10 +10,11 @@ import {
 } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import {singoutSuccess} from '../redux/user/userSlice'
 
 const DashSideBar = () => {
-
+  const dispatch = useDispatch()
   const [tab, setTab] = useState('');
   const { currentUser } = useSelector((state) => state.user);
 
@@ -27,6 +28,28 @@ const DashSideBar = () => {
       setTab(tabFromUrl)
     }
   }, [location.search])
+
+  const handleSignout = async () => {
+
+    try {
+      const res = await fetch('api/user/signout', {
+        method: 'POST',
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log(data.message)
+      } else {
+        dispatch(singoutSuccess())
+      }
+
+    } catch (error) {
+      console.log(error.message);
+    }
+
+  }
+
+
 
   return (
     <Sidebar className='w-full md:w-56'>
@@ -90,7 +113,7 @@ const DashSideBar = () => {
           <Sidebar.Item
             icon={HiArrowSmRight}
             className='cursor-pointer'
-          // onClick={handleSignout}
+          onClick={handleSignout}
           >
             Sign Out
           </Sidebar.Item>

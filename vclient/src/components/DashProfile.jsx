@@ -6,7 +6,7 @@ import { app } from '../firebase'
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
-import { updateStart, updateFailure, updateSuccess } from '../redux/user/userSlice'
+import { updateStart, updateFailure, updateSuccess, deletUserStart, deletUserFail, deleteUserSuccess,singoutSuccess } from '../redux/user/userSlice'
 
 
 
@@ -23,10 +23,10 @@ const DashProfile = () => {
   const [showModal, setShowModal] = useState(false)
 
 
-  const { currentUser, loading } = useSelector(state => state.user)
+  const { currentUser, loading, error } = useSelector(state => state.user)
 
   const filePicker = useRef()
-
+  console.log(error)
   const dispatch = useDispatch()
 
   const handleImageChange = (e) => {
@@ -131,6 +131,44 @@ const DashProfile = () => {
     }
   }
 
+  const handleDelete = async () => {
+    setShowModal(false);
+    try {
+      dispatch(deletUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(deletUserFail(data.message))
+      } else {
+        dispatch(deleteUserSuccess(data))
+      }
+    } catch (error) {
+      dispatch(deletUserFail(error.message))
+    }
+
+  }
+
+  const handleSignout = async()=>{
+
+    try {
+      const res = await fetch('api/user/signout',{
+        method:'POST',
+      });
+      const data = await res.json();
+
+      if(!res.ok){
+        console.log(data.message)
+      }else{
+        dispatch(singoutSuccess())
+      }
+      
+    } catch (error) {
+      console.log(error.message);
+    }
+
+  }
 
 
   return (
@@ -209,11 +247,12 @@ const DashProfile = () => {
         <span className='cursor-pointer' onClick={() => setShowModal(true)}>
           Delete Account
         </span>
-        <span className='cursor-pointer'>
+        <span className='cursor-pointer' onClick={handleSignout}>
           Sign Out
         </span>
       </div>
-      {updateSuccess && (
+
+      {updateUserSuccess && (
         <Alert color='success' className='mt-5'>
           {updateUserSuccess}
         </Alert>
@@ -222,6 +261,11 @@ const DashProfile = () => {
       {updateUserError && (
         <Alert color="failure" className='mt-5'>
           {updateUserError}
+        </Alert>
+      )}
+      {error && (
+        <Alert color="failure" className='mt-5'>
+          {error}
         </Alert>
       )}
 
@@ -239,7 +283,7 @@ const DashProfile = () => {
               Are you sure you want to delete your account?
             </h3>
             <div className='flex justify-center gap-4'>
-              <Button color='failure'>
+              <Button color='failure' onClick={handleDelete}>
                 Yes, I'm sure
               </Button>
               <Button color='gray' onClick={() => setShowModal(false)}>
@@ -249,11 +293,6 @@ const DashProfile = () => {
           </div>
         </Modal.Body>
       </Modal>
-
-
-
-
-
     </div>
   )
 }
